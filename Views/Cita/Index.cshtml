@@ -1,0 +1,49 @@
+﻿@model IEnumerable<CitasApp.Models.Cita>
+
+@{
+    ViewData["Title"] = "Agenda de Citas";
+}
+
+<div class="container mt-4">
+    <h1 class="mb-4">Agenda Completa de Citas</h1>
+    <table class="table table-bordered table-hover shadow-sm">
+        <thead class="table-primary">
+            <tr>
+                <th>ID Cita</th>
+                <th>ID Paciente</th>
+                <th>ID Médico</th>
+                <th>Fecha</th>
+                <th>Hora</th>
+                <th>Motivo</th>
+                <th>Estado</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var cita in Model)
+            {
+                <tr>
+                    <td>@cita.Id</td>
+                    <td>@cita.PacienteId</td>
+                    <td>@cita.MedicoId</td>
+                    <td>@cita.Fecha.ToString("dd/MM/yyyy")</td>
+                    <td>@cita.Hora.ToString("hh:mm tt")</td>
+                    <td>@cita.Motivo</td>
+                    <td>
+                        @if (cita.Estado == "Confirmada")
+                        {
+                            <span class="badge bg-success">@cita.Estado</span>
+                        }
+                        else if (cita.Estado == "Pendiente")
+                        {
+                            <span class="badge bg-warning text-dark">@cita.Estado</span>
+                        }
+                        else
+                        {
+                            <span class="badge bg-danger">@cita.Estado</span>
+                        }
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

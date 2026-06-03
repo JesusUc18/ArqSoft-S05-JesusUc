@@ -1,0 +1,49 @@
+﻿@model IEnumerable<CitasApp.Models.Cita>
+
+@{
+    ViewData["Title"] = "Citas del Paciente";
+}
+
+<div class="container mt-4">
+    <h1 class="mb-4">Historial de Citas del Paciente</h1>
+
+    @if (!Model.Any())
+    {
+        <div class="alert alert-warning" role="alert">
+            Este paciente no cuenta con citas agendadas actualmente.
+        </div>
+    }
+    else
+    {
+        <table class="table table-striped">
+            <thead class="table-info">
+                <tr>
+                    <th>ID Cita</th>
+                    <th>ID Médico</th>
+                    <th>Fecha</th>
+                    <th>Hora</th>
+                    <th>Motivo</th>
+                    <th>Estado</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var cita in Model)
+                {
+                    <tr>
+                        <td>@cita.Id</td>
+                        <td>@cita.MedicoId</td>
+                        <td>@cita.Fecha.ToString("dd/MM/yyyy")</td>
+                        <td>@cita.Hora.ToString("hh:mm tt")</td>
+                        <td>@cita.Motivo</td>
+                        <td>
+                            <span class="badge @(cita.Estado == "Confirmada" ? "bg-success" : "bg-warning text-dark")">
+                                @cita.Estado
+                            </span>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+    <a asp-controller="Paciente" asp-action="Index" class="btn btn-secondary mt-3">Volver a Pacientes</a>
+</div>
