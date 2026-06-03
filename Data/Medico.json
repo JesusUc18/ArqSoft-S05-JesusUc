@@ -1,0 +1,23 @@
+[
+  {
+    "Id": 1,
+    "Name": "Luis",
+    "Apellido": "Martínez",
+    "Especialidad": "Cardiología",
+    "NumeroLicencia": "LIC-12345"
+  },
+  {
+    "Id": 2,
+    "Name": "Elena",
+    "Apellido": "Ríos",
+    "Especialidad": "Pediatría",
+    "NumeroLicencia": "LIC-67890"
+  },
+  {
+    "Id": 3,
+    "Name": "Jorge",
+    "Apellido": "Alva",
+    "Especialidad": "Medicina General",
+    "NumeroLicencia": "LIC-45678"
+  }
+]
