@@ -1,8 +1,53 @@
 ﻿@{
-    ViewData["Title"] = "Home Page";
+    ViewData["Title"] = "Inicio - Gestión Hospitalaria";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+<div class="container mt-5">
+    <div class="text-center bg-white p-5 rounded-4 shadow-sm mb-5 border-start border-primary border-4">
+        <h1 class="display-4 fw-bold text-primary mb-3">Sistema de Control de Citas</h1>
+        <p class="lead text-muted mx-auto" style="max-width: 700px;">
+            Bienvenido al portal administrativo de <strong>Citas_App</strong>. Desde aquí puedes gestionar expedientes de pacientes, personal médico y coordinar las agendas de consultas de manera eficiente.
+        </p>
+    </div>
+
+    <div class="row g-4 justify-content-center">
+        <div class="col-md-4">
+            <div class="card h-100 text-center border-0 shadow-sm custom-hover-card">
+                <div class="card-body p-4">
+                    <div class="fs-1 text-primary mb-3">👥</div>
+                    <h3 class="card-title fw-bold h4">Módulo de Pacientes</h3>
+                    <p class="card-text text-muted small">Consulta el registro, detalles de contacto, historial médico e información de asegurados.</p>
+                </div>
+                <div class="card-footer bg-transparent border-0 pb-4">
+                    <a asp-controller="Paciente" asp-action="Index" class="btn btn-outline-primary w-100 fw-bold">Gestionar Pacientes</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card h-100 text-center border-0 shadow-sm custom-hover-card">
+                <div class="card-body p-4">
+                    <div class="fs-1 text-success mb-3">🩺</div>
+                    <h3 class="card-title fw-bold h4">Personal Médico</h3>
+                    <p class="card-text text-muted small">Administra la plantilla de especialistas, números de licencia médica y disponibilidad horaria.</p>
+                </div>
+                <div class="card-footer bg-transparent border-0 pb-4">
+                    <a asp-controller="Medico" asp-action="Index" class="btn btn-outline-success w-100 fw-bold">Ver Especialistas</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card h-100 text-center border-0 shadow-sm custom-hover-card">
+                <div class="card-body p-4">
+                    <div class="fs-1 text-warning mb-3">📅</div>
+                    <h3 class="card-title fw-bold h4">Agenda Global</h3>
+                    <p class="card-text text-muted small">Monitorea los estados de citas (Pendientes, Confirmadas o Canceladas) y asigna turnos en tiempo real.</p>
+                </div>
+                <div class="card-footer bg-transparent border-0 pb-4">
+                    <a asp-controller="Cita" asp-action="Index" class="btn btn-outline-warning text-dark w-100 fw-bold">Abrir Agenda</a>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>

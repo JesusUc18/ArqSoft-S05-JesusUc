@@ -1,6 +1,41 @@
 ﻿@{
-    ViewData["Title"] = "Privacy Policy";
+    ViewData["Title"] = "Políticas de Privacidad";
 }
-<h1>@ViewData["Title"]</h1>
 
-<p>Use this page to detail your site's privacy policy.</p>
+<div class="container mt-4" style="max-width: 800px;">
+    <div class="card border-0 shadow-sm">
+        <div class="card-header bg-dark text-white p-4">
+            <h1 class="h3 mb-1 fw-bold">🔒 @ViewData["Title"]</h1>
+            <p class="mb-0 text-white-50 small">Última actualización: Junio, 2026</p>
+        </div>
+        <div class="card-body p-4 p-md-5">
+            <p class="lead text-muted mb-4">
+                En <strong>Citas_App</strong>, valoramos y respetamos la confidencialidad de los datos médicos y personales recopilados a través de nuestro sistema de gestión hospitalaria interna.
+            </p>
+
+            <hr class="my-4 rgba-black-light">
+
+            <h3 class="h5 fw-bold text-primary mb-3">1. Recopilación de Información</h3>
+            <p class="text-muted">
+                Los datos recolectados (Nombres, correos, registros de teléfono e historial de citas médicas) son suministrados estrictamente con propósitos administrativos internos y la asignación eficiente de horarios de atención médica.
+            </p>
+
+            <h3 class="h5 fw-bold text-primary mb-3 mt-4">2. Uso y Protección de Datos</h3>
+            <p class="text-muted">
+                Toda la información del paciente se procesa en entornos locales e interactúa mediante nuestro sistema estructurado bajo la capa segura del framework .NET. No compartimos bases de datos de pacientes ni licencias de médicos con entidades publicitarias terceras.
+            </p>
+
+            <h3 class="h5 fw-bold text-primary mb-3 mt-4">3. Derechos de los Usuarios</h3>
+            <p class="text-muted">
+                Los pacientes y el personal médico mantienen en todo momento el derecho de solicitar la rectificación, actualización o baja definitiva de sus expedientes dirigiéndose al área de administración de sistemas del hospital.
+            </p>
+
+            <div class="alert alert-info border-0 mt-5 mb-0" role="alert">
+                <strong>Nota del desarrollador:</strong> Esta aplicación opera de conformidad con los estándares de simulación académica locales para el manejo de arquitecturas de software MVC en C#.
+            </div>
+        </div>
+        <div class="card-footer bg-light p-3 text-end">
+            <a asp-action="Index" class="btn btn-secondary btn-sm">Entendido y Volver</a>
+        </div>
+    </div>
+</div>
