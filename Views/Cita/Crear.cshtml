@@ -1,0 +1,88 @@
+﻿@model CitasApp.Models.Cita
+
+@{
+    ViewData["Title"] = "Agendar Cita";
+    var medicos = ViewBag.Medicos as List<CitasApp.Models.Medico>;
+    var pacientes = ViewBag.Pacientes as List<CitasApp.Models.Paciente>;
+}
+
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1>Agendar Nueva Cita</h1>
+        <a asp-action="Index" class="btn btn-secondary">← Volver a la agenda</a>
+    </div>
+
+    <div class="card shadow-sm" style="max-width: 580px;">
+        <div class="card-body">
+            <form asp-action="Crear" method="post">
+                @Html.AntiForgeryToken()
+
+                <div class="mb-3">
+                    <label asp-for="PacienteId" class="form-label">Paciente</label>
+                    <select asp-for="PacienteId" class="form-select">
+                        <option value="">-- Selecciona un paciente --</option>
+                        @if (pacientes != null)
+                        {
+                            @foreach (var p in pacientes)
+                            {
+                                <option value="@p.Id">@p.Name @p.Apellido</option>
+                            }
+                        }
+                    </select>
+                    <span asp-validation-for="PacienteId" class="text-danger small"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="MedicoId" class="form-label">Médico</label>
+                    <select asp-for="MedicoId" class="form-select">
+                        <option value="">-- Selecciona un médico --</option>
+                        @if (medicos != null)
+                        {
+                            @foreach (var m in medicos)
+                            {
+                                <option value="@m.Id">Dr(a). @m.Name @m.Apellido — @m.Especialidad</option>
+                            }
+                        }
+                    </select>
+                    <span asp-validation-for="MedicoId" class="text-danger small"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="Fecha" class="form-label">Fecha</label>
+                    <input asp-for="Fecha" type="date" class="form-control" />
+                    <span asp-validation-for="Fecha" class="text-danger small"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="Hora" class="form-label">Hora</label>
+                    <input asp-for="Hora" type="time" class="form-control" />
+                    <span asp-validation-for="Hora" class="text-danger small"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="Motivo" class="form-label">Motivo</label>
+                    <textarea asp-for="Motivo" class="form-control" rows="2" placeholder="Describe el motivo de la cita"></textarea>
+                    <span asp-validation-for="Motivo" class="text-danger small"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="Estado" class="form-label">Estado</label>
+                    <select asp-for="Estado" class="form-select">
+                        <option value="Pendiente">Pendiente</option>
+                        <option value="Confirmada">Confirmada</option>
+                        <option value="Cancelada">Cancelada</option>
+                    </select>
+                    <span asp-validation-for="Estado" class="text-danger small"></span>
+                </div>
+
+                <button type="submit" class="btn btn-success w-100">Guardar Cita</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}
