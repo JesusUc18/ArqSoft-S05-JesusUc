@@ -1,9 +1,10 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using CitasApp.Models;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text.Json;
+using CitasApp.Domain.Models;
+using CitasApp.Domain.Interfaces;
 
 namespace Citas_App.Controllers
 {

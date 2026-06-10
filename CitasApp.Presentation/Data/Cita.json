@@ -23,7 +23,7 @@
     "MedicoId": 1,
     "Fecha": "2026-06-17",
     "Hora": "11:15:00",
-    "Motivo": "Revisión de exámenes de laboratorio",
+    "Motivo": "Revisi\u00F3n de ex\u00E1menes de laboratorio",
     "Estado": "Cancelada"
   },
   {
@@ -34,5 +34,14 @@
     "Hora": "09:00:00",
     "Motivo": "Malestar general y fiebre",
     "Estado": "Confirmada"
+  },
+  {
+    "Id": 5,
+    "PacienteId": 2,
+    "MedicoId": 5,
+    "Fecha": "2026-06-28",
+    "Hora": "01:29:00",
+    "Motivo": "Hola",
+    "Estado": "Pendiente"
   }
 ]

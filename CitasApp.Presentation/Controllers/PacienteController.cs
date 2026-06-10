@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using CitasApp.Models;
+using CitasApp.Domain.Models;
+using CitasApp.Domain.Interfaces;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;

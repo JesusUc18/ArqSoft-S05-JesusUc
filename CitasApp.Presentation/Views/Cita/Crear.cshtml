@@ -1,9 +1,9 @@
-﻿@model CitasApp.Models.Cita
+﻿@model CitasApp.Domain.Models.Cita
 
 @{
     ViewData["Title"] = "Agendar Cita";
-    var medicos = ViewBag.Medicos as List<CitasApp.Models.Medico>;
-    var pacientes = ViewBag.Pacientes as List<CitasApp.Models.Paciente>;
+    var medicos = ViewBag.Medicos as List<CitasApp.Domain.Models.Medico>;
+    var pacientes = ViewBag.Pacientes as List<CitasApp.Domain.Models.Paciente>;
 }
 
 <div class="container mt-4">
