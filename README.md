@@ -1,4 +1,4 @@
-# Arquitectura de Software - Actividad #14 - Práctica .NET: Implementar MVC con ASP.NET Core
+# Arquitectura de Software - Actividad #18 - Práctica .NET: Arquitectura Hexagonal en C#
 
 ## 👨‍💻 Información del Estudiante
 
@@ -13,9 +13,9 @@
 
 # 🏥 Sistema de Gestión de Citas Médicas
 
-Este proyecto es una **aplicación web MVC desarrollada en .NET** que permite administrar información relacionada con pacientes, médicos y citas médicas.
+Este proyecto es una **aplicación web desarrollada en .NET** que permite administrar información relacionada con pacientes, médicos y citas médicas.
 
-El sistema facilita el registro y visualización de pacientes, médicos y citas, organizando la información mediante el patrón de arquitectura **Modelo-Vista-Controlador (MVC)**. Esto permite mantener una estructura ordenada, escalable y fácil de mantener.
+El sistema facilita el registro y visualización de pacientes, médicos y citas, organizando la información mediante los principios de la **Arquitectura Hexagonal (Clean Architecture)**. Esto permite desacoplar la lógica de negocio central de los detalles de infraestructura y de la interfaz de usuario, manteniendo una estructura altamente ordenada, escalable y fácil de mantener.
 
 ---
 
@@ -24,22 +24,23 @@ El sistema facilita el registro y visualización de pacientes, médicos y citas,
 * Registro y gestión de pacientes.
 * Registro y gestión de médicos.
 * Administración de citas médicas.
-* Organización mediante arquitectura MVC.
-* Interfaz web desarrollada con Razor Views.
-* Separación clara entre modelos, vistas y controladores.
-* Código estructurado para futuras ampliaciones.
+* **Organización mediante Arquitectura Hexagonal dividida en 4 proyectos desacoplados.**
+* Interfaz web desarrollada con Razor Views en la capa de presentación.
+* Inversión de dependencias para asegurar que las reglas de negocio no dependan de la base de datos o frameworks.
+* Código estructurado y modular para futuras ampliaciones o cambios de infraestructura.
 
 ---
 
 ## 🩺 Cómo funciona el sistema
 
-1. **Inicio de la aplicación:** El usuario accede al sistema desde el navegador.
-2. **Gestión de pacientes:** Se pueden visualizar y administrar los datos de los pacientes.
+1. **Inicio de la aplicación:** El usuario accede al sistema desde el navegador web (Capa de Presentación).
+2. **Gestión de pacientes:** Se pueden visualizar y administrar los datos de los pacientes a través de casos de uso (Capa de Aplicación).
 3. **Gestión de médicos:** Se registran y consultan médicos con su especialidad y número de licencia.
-4. **Gestión de citas:** Se programan citas asociando pacientes y médicos.
-5. **Controladores MVC:** Procesan las solicitudes y retornan las vistas correspondientes.
-6. **Modelos:** Representan las entidades principales del sistema.
-7. **Vistas:** Presentan la información de manera visual e interactiva.
+4. **Gestión de citas:** Se programan citas asociando pacientes y médicos mediante reglas de negocio del dominio.
+5. **Capa de Dominio (Domain):** Contiene las entidades principales y las interfaces de los repositorios sin dependencias externas.
+6. **Capa de Aplicación (Application):** Orquesta los flujos de trabajo e implementa los casos de uso del sistema.
+7. **Capa de Infraestructura (Infrastructure):** Gestiona el acceso a datos (DbContext), la persistencia de archivos JSON y componentes externos.
+8. **Capa de Presentación (Presentation):** Procesa las solicitudes mediante controladores MVC y retorna las vistas interactivas (Razor).
 
 ---
 
@@ -67,71 +68,56 @@ El sistema facilita el registro y visualización de pacientes, médicos y citas,
 ## 📁 Estructura del proyecto
 
 ```text
+
 CitasApp/
-├── Areas/
-│   └── Identity/
+├── CitasApp.Domain/
+│   ├── Entities/
+│   │   ├── Paciente.cs
+│   │   ├── Medico.cs
+│   │   └── Cita.cs
+│   └── Interfaces/
+│       └── IRepository.cs
 │
-├── Controllers/
-│   ├── HomeController.cs
-│   ├── PacienteController.cs
-│   ├── MedicoController.cs
-│   └── CitaController.cs
+├── CitasApp.Application/
+│   ├── Services/
+│   └── UseCases/
 │
-├── Data/
-│   ├── ApplicationDbContext.cs
-│   ├── Pacientes.json
-│   ├── Medico.json
-│   └── Cita.json
+├── CitasApp.Infrastructure/
+│   ├── Data/
+│   │   ├── ApplicationDbContext.cs
+│   │   ├── Pacientes.json
+│   │   ├── Medico.json
+│   │   └── Cita.json
+│   ├── Migrations/
+│   └── Repositories/
 │
-├── Migrations/
+├── CitasApp.Presentation/
+│   ├── Areas/
+│   │   └── Identity/
+│   ├── Controllers/
+│   │   ├── HomeController.cs
+│   │   ├── PacienteController.cs
+│   │   ├── MedicoController.cs
+│   │   └── CitaController.cs
+│   ├── Models/
+│   │   └── ErrorViewModel.cs
+│   ├── Properties/
+│   ├── Views/
+│   │   ├── Cita/
+│   │   ├── Home/
+│   │   ├── Medico/
+│   │   ├── Paciente/
+│   │   └── Shared/
+│   ├── wwwroot/
+│   ├── Program.cs
+│   ├── appsettings.json
+│   └── appsettings.Development.json
 │
-├── Models/
-│   ├── Paciente.cs
-│   ├── Medico.cs
-│   ├── Cita.cs
-│   └── ErrorViewModel.cs
-│
-├── Properties/
-│
-├── Views/
-│   ├── Cita/
-│   │   ├── Crear.cshtml
-│   │   ├── Index.cshtml
-│   │   └── PorPaciente.cshtml
-│   │
-│   ├── Home/
-│   │   ├── Index.cshtml
-│   │   └── Privacy.cshtml
-│   │
-│   ├── Medico/
-│   │   ├── Crear.cshtml
-│   │   ├── Detalle.cshtml
-│   │   └── Index.cshtml
-│   │
-│   ├── Paciente/
-│   │   ├── Crear.cshtml
-│   │   ├── Detalle.cshtml
-│   │   └── Index.cshtml
-│   │
-│   └── Shared/
-│       ├── _Layout.cshtml
-│       ├── _LoginPartial.cshtml
-│       ├── _ValidationScriptsPartial.cshtml
-│       └── Error.cshtml
-│
-├── wwwroot/
-│   ├── css/
-│   ├── js/
-│   └── lib/
-│
-├── Program.cs
-├── appsettings.json
-├── appsettings.Development.json
-├── CitasApp.csproj
 ├── CitasApp.slnx
 ├── README.md
 ├── .gitignore
 └── .gitattributes
+
 ```
 
 ---
@@ -183,45 +169,40 @@ Representa las citas médicas programadas:
 * **Bootstrap**
 * **Entity Framework Core**
 * **Visual Studio 2022**
-* **MVC Pattern (Model-View-Controller)**
+* **Hexagonal Architecture Pattern (Clean Architecture)**
 
 ---
 
 # 📚 Archivos principales
 
-* **Program.cs** – Configuración principal y arranque de la aplicación.
-* **Controllers/** – Controladores encargados de gestionar las solicitudes.
-* **Models/** – Entidades principales del sistema.
-* **Views/** – Interfaz visual para los usuarios.
-* **Data/** – Configuración y acceso a datos.
-* **wwwroot/** – Recursos estáticos como CSS, JavaScript e imágenes.
-* **appsettings.json** – Configuración general del proyecto.
-
+* **CitasApp.Domain** – El núcleo de la aplicación; contiene las entidades de negocio puras e interfaces de abstracción.
+* **CitasApp.Application** – Contiene la lógica de la aplicación y el flujo de los casos de uso implementados.
+* **CitasApp.Infrastructure** – Implementación del acceso a datos, persistencia en archivos JSON, migraciones y dependencias del framework de datos.
+* **CitasApp.Presentation** – Interfaz de usuario basada en el patrón MVC, controladores web, recursos estáticos (`wwwroot`) y el archivo de arranque central (`Program.cs`).
 ---
 
 ---
 
 ## 🤖 Cláusula de Uso de Inteligencia Artificial
 
-Durante el desarrollo de este proyecto se utilizó apoyo de herramientas de Inteligencia Artificial únicamente como recurso complementario de aprendizaje y consulta.
+Durante el desarrollo y posterior evolución de este proyecto se utilizó apoyo de herramientas de Inteligencia Artificial únicamente como recurso complementario de aprendizaje, consulta y automatización de tareas estructurales.
 
 La IA fue empleada específicamente en:
 
 * **Diseño y personalización de estilos CSS** para mejorar la apariencia visual de la aplicación.
-* **Implementación de la lógica para el registro de pacientes.**
-* **Implementación de la lógica para el registro de médicos.**
-* **Implementación de la lógica para el registro de citas.**
+* **Implementación de la lógica inicial para el registro** de pacientes, médicos y citas.
+* **Orientación técnica para la refactorización arquitectónica**, guiando la separación del monolito original hacia una estructura limpia desacoplada en 4 capas (Domain, Application, Infrastructure, Presentation) mediante comandos de la CLI de .NET y Git.
 
-Estas funcionalidades representaban una lógica más avanzada respecto a los conocimientos que poseía al momento de desarrollar la práctica, por lo que la Inteligencia Artificial fue utilizada como apoyo para comprender conceptos, resolver dudas y orientar la implementación.
+Estas funcionalidades y cambios arquitectónicos representaban una lógica avanzada respecto a los conocimientos previos, por lo que la Inteligencia Artificial fue utilizada como apoyo para comprender conceptos de diseño de software modular, resolver dudas de dependencias y orientar la implementación.
 
-El resto de la estructura del proyecto, organización de archivos, adaptación del código, pruebas, comprensión de la funcionalidad y documentación fueron realizadas de manera personal como parte del proceso de aprendizaje académico.
+El resto de la lógica de negocio, pruebas de compilación, adaptación final del código, resolución de rutas y documentación fueron realizadas de manera personal como parte del proceso de aprendizaje académico.
 
 ---
 
 
 ## 🎯 Objetivo de la práctica
 
-Aplicar los principios de la arquitectura MVC mediante el desarrollo de una aplicación web capaz de gestionar pacientes, médicos y citas médicas, fortaleciendo el uso de .NET, C# y la organización del código en capas.
+Aplicar los principios de la arquitectura de software avanzada mediante la transición de un sistema monolítico tradicional hacia una arquitectura hexagonal, aislando de manera eficiente las reglas de negocio de los detalles técnicos y de presentación en capas independientes en .NET 10.
 
 ---
 
