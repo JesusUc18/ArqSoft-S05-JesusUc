@@ -28,6 +28,7 @@ El sistema facilita el registro y visualización de pacientes, médicos y citas,
 * Interfaz web desarrollada con Razor Views en la capa de presentación.
 * Inversión de dependencias para asegurar que las reglas de negocio no dependan de la base de datos o frameworks.
 * Código estructurado y modular para futuras ampliaciones o cambios de infraestructura.
+* **3 adapters de persistencia intercambiables:** JSON, CSV y SQLite — se activan desde `Program.cs` sin tocar el Dominio ni la Aplicación.
 
 ---
 
@@ -39,7 +40,7 @@ El sistema facilita el registro y visualización de pacientes, médicos y citas,
 4. **Gestión de citas:** Se programan citas asociando pacientes y médicos mediante reglas de negocio del dominio.
 5. **Capa de Dominio (Domain):** Contiene las entidades principales y las interfaces de los repositorios sin dependencias externas.
 6. **Capa de Aplicación (Application):** Orquesta los flujos de trabajo e implementa los casos de uso del sistema.
-7. **Capa de Infraestructura (Infrastructure):** Gestiona el acceso a datos (DbContext), la persistencia de archivos JSON y componentes externos.
+7. **Capa de Infraestructura (Infrastructure):** Contiene tres adapters de persistencia intercambiables para cada entidad — JSON, CSV y SQLite — seleccionables desde `Program.cs` sin modificar el Dominio.
 8. **Capa de Presentación (Presentation):** Procesa las solicitudes mediante controladores MVC y retorna las vistas interactivas (Razor).
 
 ---
@@ -71,25 +72,30 @@ El sistema facilita el registro y visualización de pacientes, médicos y citas,
 
 CitasApp/
 ├── CitasApp.Domain/
-│   ├── Entities/
+│   ├── Models/
 │   │   ├── Paciente.cs
 │   │   ├── Medico.cs
-│   │   └── Cita.cs
+│   │   ├── Cita.cs
+│   │   └── ErrorViewModel.cs
 │   └── Interfaces/
-│       └── IRepository.cs
+│       ├── IPacienteRepository.cs
+│       ├── IMedicoRepository.cs
+│       └── ICitaRepository.cs
 │
 ├── CitasApp.Application/
-│   ├── Services/
-│   └── UseCases/
+│   └── service/
 │
 ├── CitasApp.Infrastructure/
-│   ├── Data/
-│   │   ├── ApplicationDbContext.cs
-│   │   ├── Pacientes.json
-│   │   ├── Medico.json
-│   │   └── Cita.json
-│   ├── Migrations/
 │   └── Repositories/
+│       ├── JsonPacienteRepository.cs   ← Adapter A
+│       ├── JsonMedicoRepository.cs
+│       ├── JsonCitaRepository.cs
+│       ├── CsvPacienteRepository.cs    ← Adapter B (activo)
+│       ├── CsvMedicoRepository.cs
+│       ├── CsvCitaRepository.cs
+│       ├── SqlitePacienteRepository.cs ← Adapter C
+│       ├── SqliteMedicoRepository.cs
+│       └── SqliteCitaRepository.cs
 │
 ├── CitasApp.Presentation/
 │   ├── Areas/
@@ -99,8 +105,9 @@ CitasApp/
 │   │   ├── PacienteController.cs
 │   │   ├── MedicoController.cs
 │   │   └── CitaController.cs
-│   ├── Models/
-│   │   └── ErrorViewModel.cs
+│   ├── Data/
+│   │   ├── ApplicationDbContext.cs
+│   │   └── Migrations/
 │   ├── Properties/
 │   ├── Views/
 │   │   ├── Cita/
@@ -119,6 +126,33 @@ CitasApp/
 └── .gitattributes
 
 ```
+
+---
+
+## 🔌 Adapters de persistencia intercambiables
+
+Uno de los beneficios clave de la Arquitectura Hexagonal es que el **Dominio nunca sabe cómo se guardan los datos**. Los tres adapters implementan los mismos Ports (`IPacienteRepository`, `IMedicoRepository`, `ICitaRepository`) y se enchufan desde `Program.cs` sin modificar ninguna otra capa.
+
+| Bloque | Adapter | Descripción |
+|--------|---------|-------------|
+| **A** | JSON | Lectura/escritura en archivos `.json` dentro de `/Data`. Era el comportamiento original. |
+| **B** ✅ | CSV | Lectura/escritura en archivos `.csv` dentro de `/Data`. **Activo actualmente.** |
+| **C** | SQLite | Base de datos local (`citasapp.db`) usando `Microsoft.Data.Sqlite`. Sin servidor requerido. |
+
+Para cambiar de adapter basta con comentar el bloque activo y descomentar otro en `Program.cs`:
+
+```csharp
+// ▶ Bloque A — JSON
+// builder.Services.AddSingleton<IPacienteRepository, JsonPacienteRepository>();
+
+// ▶ Bloque B — CSV  ← activo
+builder.Services.AddSingleton<IPacienteRepository>(_ => new CsvPacienteRepository(csvPacientes));
+
+// ▶ Bloque C — SQLite
+// builder.Services.AddSingleton<IPacienteRepository>(_ => new SqlitePacienteRepository(sqlitePath));
+```
+
+> **Nota:** El adapter SQLite requiere el paquete `Microsoft.Data.Sqlite` en el proyecto `CitasApp.Infrastructure`.
 
 ---
 
@@ -160,14 +194,15 @@ Representa las citas médicas programadas:
 
 ## 🎨 Tecnologías utilizadas
 
-* **.NET 8 MVC**
+* **.NET 10 MVC**
 * **C#**
 * **ASP.NET Core**
 * **Razor Views (CSHTML)**
 * **HTML5**
 * **CSS3**
 * **Bootstrap**
-* **Entity Framework Core**
+* **Entity Framework Core** (Identity)
+* **Microsoft.Data.Sqlite** (adapter SQLite)
 * **Visual Studio 2022**
 * **Hexagonal Architecture Pattern (Clean Architecture)**
 
@@ -175,10 +210,11 @@ Representa las citas médicas programadas:
 
 # 📚 Archivos principales
 
-* **CitasApp.Domain** – El núcleo de la aplicación; contiene las entidades de negocio puras e interfaces de abstracción.
+* **CitasApp.Domain** – El núcleo de la aplicación; contiene las entidades de negocio puras e interfaces de repositorio separadas por entidad (`IPacienteRepository`, `IMedicoRepository`, `ICitaRepository`).
 * **CitasApp.Application** – Contiene la lógica de la aplicación y el flujo de los casos de uso implementados.
-* **CitasApp.Infrastructure** – Implementación del acceso a datos, persistencia en archivos JSON, migraciones y dependencias del framework de datos.
-* **CitasApp.Presentation** – Interfaz de usuario basada en el patrón MVC, controladores web, recursos estáticos (`wwwroot`) y el archivo de arranque central (`Program.cs`).
+* **CitasApp.Infrastructure** – Tres adapters de persistencia intercambiables (JSON, CSV, SQLite) para cada entidad; sin dependencia del Dominio ni la Presentación.
+* **CitasApp.Presentation** – Interfaz de usuario basada en el patrón MVC, controladores web, recursos estáticos (`wwwroot`) y el archivo de arranque central (`Program.cs`) donde se selecciona el adapter activo.
+
 ---
 
 ---
