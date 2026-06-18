@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>CitasApp · panel de pruebas</title>
+<style>
+  :root {
+    --bg: #0f1117;
+    --card: #1a1d27;
+    --border: #2a2e3a;
+    --text: #e6e8ee;
+    --muted: #8b90a0;
+    --accent: #5b8def;
+    --ok: #3ddc84;
+    --err: #ff6b6b;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: 'Segoe UI', system-ui, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    padding: 32px;
+  }
+  h1 { font-size: 22px; margin-bottom: 4px; }
+  p.subtitle { color: var(--muted); margin-top: 0; margin-bottom: 28px; }
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 20px;
+  }
+  .card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 18px 20px;
+  }
+  .card h2 {
+    font-size: 16px;
+    margin: 0 0 12px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .badge {
+    font-size: 11px;
+    font-weight: 600;
+    padding: 2px 8px;
+    border-radius: 999px;
+    background: rgba(91,141,239,.15);
+    color: var(--accent);
+  }
+  .row { display: flex; gap: 8px; margin-bottom: 10px; flex-wrap: wrap; }
+  input {
+    background: #11141c;
+    border: 1px solid var(--border);
+    color: var(--text);
+    border-radius: 6px;
+    padding: 7px 10px;
+    width: 70px;
+    font-size: 13px;
+  }
+  button {
+    background: var(--accent);
+    color: white;
+    border: none;
+    border-radius: 6px;
+    padding: 7px 12px;
+    font-size: 13px;
+    cursor: pointer;
+  }
+  button:hover { opacity: .85; }
+  button.secondary { background: #2a2e3a; }
+  pre {
+    background: #0b0d12;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 10px;
+    font-size: 12px;
+    max-height: 180px;
+    overflow: auto;
+    margin: 0;
+    white-space: pre-wrap;
+    word-break: break-word;
+  }
+  .status { font-size: 11px; margin-bottom: 6px; font-weight: 600; }
+  .status.ok { color: var(--ok); }
+  .status.err { color: var(--err); }
+</style>
+</head>
+<body>
+  <h1>CitasApp · panel de pruebas</h1>
+  <p class="subtitle">Prueba manual de los endpoints GET — CitasApp + Calculadora</p>
+
+  <div class="grid">
+
+    <div class="card">
+      <h2>Pacientes <span class="badge">/api/pacientes</span></h2>
+      <div class="row">
+        <button onclick="listar('pacientes')">Listar todos</button>
+        <input id="pacientes-id" type="number" placeholder="id">
+        <button class="secondary" onclick="porId('pacientes')">Buscar por id</button>
+      </div>
+      <div id="pacientes-status" class="status"></div>
+      <pre id="pacientes-out">—</pre>
+    </div>
+
+    <div class="card">
+      <h2>Médicos <span class="badge">/api/medicos</span></h2>
+      <div class="row">
+        <button onclick="listar('medicos')">Listar todos</button>
+        <input id="medicos-id" type="number" placeholder="id">
+        <button class="secondary" onclick="porId('medicos')">Buscar por id</button>
+      </div>
+      <div id="medicos-status" class="status"></div>
+      <pre id="medicos-out">—</pre>
+    </div>
+
+    <div class="card">
+      <h2>Citas <span class="badge">/api/citas</span></h2>
+      <div class="row">
+        <button onclick="listar('citas')">Listar todas</button>
+        <input id="citas-pacienteId" type="number" placeholder="pacienteId">
+        <button class="secondary" onclick="porPaciente()">Por paciente</button>
+      </div>
+      <div id="citas-status" class="status"></div>
+      <pre id="citas-out">—</pre>
+    </div>
+
+    <div class="card">
+      <h2>Calculadora <span class="badge">/api/calculadora</span></h2>
+      <div class="row">
+        <input id="calc-a" type="number" placeholder="a" value="6">
+        <input id="calc-b" type="number" placeholder="b" value="3">
+      </div>
+      <div class="row">
+        <button onclick="calcular('sumar')">Sumar</button>
+        <button onclick="calcular('restar')">Restar</button>
+        <button onclick="calcular('multiplicar')">Multiplicar</button>
+        <button onclick="calcular('dividir')">Dividir</button>
+      </div>
+      <div id="calc-status" class="status"></div>
+      <pre id="calc-out">—</pre>
+    </div>
+
+  </div>
+
+<script>
+async function llamar(url, statusId, outId) {
+  var statusEl = document.getElementById(statusId);
+  var outEl = document.getElementById(outId);
+  statusEl.textContent = 'cargando...';
+  statusEl.className = 'status';
+  try {
+    var res = await fetch(url);
+    var data = await res.json().catch(function () { return null; });
+    outEl.textContent = JSON.stringify(data, null, 2);
+    statusEl.textContent = res.status + ' ' + res.statusText;
+    statusEl.className = 'status ' + (res.ok ? 'ok' : 'err');
+  } catch (e) {
+    outEl.textContent = String(e);
+    statusEl.textContent = 'error de red';
+    statusEl.className = 'status err';
+  }
+}
+
+function listar(recurso) {
+  llamar('/api/' + recurso, recurso + '-status', recurso + '-out');
+}
+
+function porId(recurso) {
+  var id = document.getElementById(recurso + '-id').value;
+  llamar('/api/' + recurso + '/' + id, recurso + '-status', recurso + '-out');
+}
+
+function porPaciente() {
+  var id = document.getElementById('citas-pacienteId').value;
+  llamar('/api/citas/porpaciente/' + id, 'citas-status', 'citas-out');
+}
+
+function calcular(op) {
+  var a = document.getElementById('calc-a').value;
+  var b = document.getElementById('calc-b').value;
+  llamar('/api/calculadora/' + op + '?a=' + a + '&b=' + b, 'calc-status', 'calc-out');
+}
+</script>
+</body>
+</html>
