@@ -6,7 +6,7 @@ namespace CitasApp.Infrastructure.Repositories
 {
     public class JsonPacienteRepository : IPacienteRepository
     {
-        private readonly string _filePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Pacientes.json");
+        private readonly string _filePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "data", "Pacientes.json");
 
         private List<Paciente> ObtenerTodosInterno()
         {

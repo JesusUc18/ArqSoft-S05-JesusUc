@@ -6,7 +6,7 @@ namespace CitasApp.Infrastructure.Repositories
 {
     public class JsonMedicoRepository : IMedicoRepository
     {
-        private readonly string _filePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Medico.json");
+        private readonly string _filePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "data", "Medicos.json");
 
         private List<Medico> ObtenerTodosInterno()
         {
