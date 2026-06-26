@@ -1,5 +1,6 @@
 ﻿using CitasApp.Application.Services;
 using CitasApp.Domain.Models;
+using CitasApp.Infrastructure.Observers;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CitasApp.Api.Controllers
@@ -27,6 +28,16 @@ namespace CitasApp.Api.Controllers
         {
             var citas = _citaService.ObtenerPorPaciente(pacienteId);
             return citas.Count == 0 ? NotFound() : Ok(citas);
+        }
+
+        [HttpPost("confirmar/{citaId}")]
+        public IActionResult Confirmar(int citaId)
+        {
+            _citaService.AgregarObserver(new SmsObserver());
+            _citaService.AgregarObserver(new EmailObserver());
+            _citaService.Confirmar(citaId);
+            var cita = _citaService.ObtenerPorId(citaId);
+            return cita == null ? NotFound() : Ok(new { mensaje = $"Cita confirmada", cita });
         }
     }
 }
