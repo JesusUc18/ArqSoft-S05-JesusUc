@@ -45,6 +45,13 @@ El sistema facilita el registro y visualización de pacientes, médicos y citas,
 
 ---
 
+## 🧩 Diagrama de arquitectura (UML)
+
+El diagrama de arquitectura que refleja el estado real del proyecto está en
+[`docs/uml-arquitectura.md`](docs/uml-arquitectura.md). 
+
+---
+
 ## 📸 Capturas de Pantalla
 
 | Inicio/Privacidad | Citas |
