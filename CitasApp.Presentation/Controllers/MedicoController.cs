@@ -1,8 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using System.Text.Json;
 using CitasApp.Domain.Models;
 using CitasApp.Domain.Interfaces;
 
@@ -10,32 +8,22 @@ namespace Citas_App.Controllers
 {
     public class MedicoController : Controller
     {
-        private readonly string _jsonPath = Path.Combine(Directory.GetCurrentDirectory(), "Data", "Medico.json");
+        private readonly IMedicoRepository _medicoRepository;
 
-        private List<Medico> ObtenerMedicosDesdeJson()
+        public MedicoController(IMedicoRepository medicoRepository)
         {
-            if (!System.IO.File.Exists(_jsonPath)) return new List<Medico>();
-            string jsonString = System.IO.File.ReadAllText(_jsonPath);
-            return JsonSerializer.Deserialize<List<Medico>>(jsonString) ?? new List<Medico>();
-        }
-
-        private void GuardarMedicosEnJson(List<Medico> medicos)
-        {
-            var opciones = new JsonSerializerOptions { WriteIndented = true };
-            string jsonString = JsonSerializer.Serialize(medicos, opciones);
-            System.IO.File.WriteAllText(_jsonPath, jsonString);
+            _medicoRepository = medicoRepository;
         }
 
         public IActionResult Index()
         {
-            var medicos = ObtenerMedicosDesdeJson();
+            var medicos = _medicoRepository.ObtenerTodos();
             return View(medicos);
         }
 
         public IActionResult Detalle(int id)
         {
-            var medicos = ObtenerMedicosDesdeJson();
-            var medico = medicos.FirstOrDefault(m => m.Id == id);
+            var medico = _medicoRepository.ObtenerPorId(id);
             if (medico == null) return NotFound();
             return View(medico);
         }
@@ -54,10 +42,7 @@ namespace Citas_App.Controllers
         {
             if (!ModelState.IsValid) return View(medico);
 
-            var medicos = ObtenerMedicosDesdeJson();
-            medico.Id = medicos.Count > 0 ? medicos.Max(m => m.Id) + 1 : 1;
-            medicos.Add(medico);
-            GuardarMedicosEnJson(medicos);
+            _medicoRepository.Agregar(medico);
 
             TempData["Mensaje"] = "Médico agregado correctamente.";
             return RedirectToAction("Index");

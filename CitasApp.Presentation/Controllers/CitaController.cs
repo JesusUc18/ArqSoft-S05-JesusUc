@@ -1,8 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using System.Text.Json;
 using CitasApp.Domain.Models;
 using CitasApp.Domain.Interfaces;
 
@@ -10,57 +8,40 @@ namespace Citas_App.Controllers
 {
     public class CitaController : Controller
     {
-        private readonly string _jsonPath = Path.Combine(Directory.GetCurrentDirectory(), "Data", "Cita.json");
-        private readonly string _medicosPath = Path.Combine(Directory.GetCurrentDirectory(), "Data", "Medico.json");
-        private readonly string _pacientesPath = Path.Combine(Directory.GetCurrentDirectory(), "Data", "Pacientes.json");
+        private readonly ICitaRepository _citaRepository;
+        private readonly IMedicoRepository _medicoRepository;
+        private readonly IPacienteRepository _pacienteRepository;
 
-        private List<Cita> ObtenerCitasDesdeJson()
+        public CitaController(
+            ICitaRepository citaRepository,
+            IMedicoRepository medicoRepository,
+            IPacienteRepository pacienteRepository)
         {
-            if (!System.IO.File.Exists(_jsonPath)) return new List<Cita>();
-            string jsonString = System.IO.File.ReadAllText(_jsonPath);
-            return JsonSerializer.Deserialize<List<Cita>>(jsonString) ?? new List<Cita>();
-        }
-
-        private void GuardarCitasEnJson(List<Cita> citas)
-        {
-            var opciones = new JsonSerializerOptions { WriteIndented = true };
-            string jsonString = JsonSerializer.Serialize(citas, opciones);
-            System.IO.File.WriteAllText(_jsonPath, jsonString);
-        }
-
-        private List<Medico> ObtenerMedicos()
-        {
-            if (!System.IO.File.Exists(_medicosPath)) return new List<Medico>();
-            string jsonString = System.IO.File.ReadAllText(_medicosPath);
-            return JsonSerializer.Deserialize<List<Medico>>(jsonString) ?? new List<Medico>();
-        }
-
-        private List<Paciente> ObtenerPacientes()
-        {
-            if (!System.IO.File.Exists(_pacientesPath)) return new List<Paciente>();
-            string jsonString = System.IO.File.ReadAllText(_pacientesPath);
-            return JsonSerializer.Deserialize<List<Paciente>>(jsonString) ?? new List<Paciente>();
+            _citaRepository = citaRepository;
+            _medicoRepository = medicoRepository;
+            _pacienteRepository = pacienteRepository;
         }
 
         public IActionResult Index()
         {
-            var citas = ObtenerCitasDesdeJson();
+            var citas = _citaRepository.ObtenerTodas();
             return View(citas);
         }
 
         public IActionResult PorPaciente(int pacienteId)
         {
-            var citas = ObtenerCitasDesdeJson();
-            var citasPaciente = citas.Where(c => c.PacienteId == pacienteId).ToList();
-            return View(citasPaciente);
+            var citas = _citaRepository.ObtenerTodas()
+                .Where(c => c.PacienteId == pacienteId)
+                .ToList();
+            return View(citas);
         }
 
         // GET: Cita/Crear
         [HttpGet]
         public IActionResult Crear()
         {
-            ViewBag.Medicos = ObtenerMedicos();
-            ViewBag.Pacientes = ObtenerPacientes();
+            ViewBag.Medicos = _medicoRepository.ObtenerTodos();
+            ViewBag.Pacientes = _pacienteRepository.ObtenerTodos();
             return View();
         }
 
@@ -71,15 +52,12 @@ namespace Citas_App.Controllers
         {
             if (!ModelState.IsValid)
             {
-                ViewBag.Medicos = ObtenerMedicos();
-                ViewBag.Pacientes = ObtenerPacientes();
+                ViewBag.Medicos = _medicoRepository.ObtenerTodos();
+                ViewBag.Pacientes = _pacienteRepository.ObtenerTodos();
                 return View(cita);
             }
 
-            var citas = ObtenerCitasDesdeJson();
-            cita.Id = citas.Count > 0 ? citas.Max(c => c.Id) + 1 : 1;
-            citas.Add(cita);
-            GuardarCitasEnJson(citas);
+            _citaRepository.Agregar(cita);
 
             TempData["Mensaje"] = "Cita agendada correctamente.";
             return RedirectToAction("Index");

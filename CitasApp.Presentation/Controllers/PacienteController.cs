@@ -2,40 +2,28 @@
 using CitasApp.Domain.Models;
 using CitasApp.Domain.Interfaces;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using System.Text.Json;
 
 namespace Citas_App.Controllers
 {
     public class PacienteController : Controller
     {
-        private readonly string _jsonPath = Path.Combine(Directory.GetCurrentDirectory(), "Data", "Pacientes.json");
+        private readonly IPacienteRepository _pacienteRepository;
 
-        private List<Paciente> ObtenerPacientesDesdeJson()
+        public PacienteController(IPacienteRepository pacienteRepository)
         {
-            if (!System.IO.File.Exists(_jsonPath)) return new List<Paciente>();
-            string jsonString = System.IO.File.ReadAllText(_jsonPath);
-            return JsonSerializer.Deserialize<List<Paciente>>(jsonString) ?? new List<Paciente>();
-        }
-
-        private void GuardarPacientesEnJson(List<Paciente> pacientes)
-        {
-            var opciones = new JsonSerializerOptions { WriteIndented = true };
-            string jsonString = JsonSerializer.Serialize(pacientes, opciones);
-            System.IO.File.WriteAllText(_jsonPath, jsonString);
+            _pacienteRepository = pacienteRepository;
         }
 
         public IActionResult Index()
         {
-            var pacientes = ObtenerPacientesDesdeJson();
+            var pacientes = _pacienteRepository.ObtenerTodos();
             return View(pacientes);
         }
 
         public IActionResult Detalle(int id)
         {
-            var pacientes = ObtenerPacientesDesdeJson();
-            var paciente = pacientes.FirstOrDefault(p => p.Id == id);
+            var paciente = _pacienteRepository.ObtenerPorId(id);
             if (paciente == null) return NotFound();
             return View(paciente);
         }
@@ -54,10 +42,7 @@ namespace Citas_App.Controllers
         {
             if (!ModelState.IsValid) return View(paciente);
 
-            var pacientes = ObtenerPacientesDesdeJson();
-            paciente.Id = pacientes.Count > 0 ? pacientes.Max(p => p.Id) + 1 : 1;
-            pacientes.Add(paciente);
-            GuardarPacientesEnJson(pacientes);
+            _pacienteRepository.Agregar(paciente);
 
             TempData["Mensaje"] = "Paciente registrado correctamente.";
             return RedirectToAction("Index");
