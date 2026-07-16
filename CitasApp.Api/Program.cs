@@ -1,5 +1,6 @@
 using CitasApp.Domain.Interfaces;
 using CitasApp.Infrastructure.Repositories;
+using CitasApp.Infrastructure.Observers;
 using CitasApp.Application.Services;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -34,6 +35,12 @@ builder.Services.AddScoped<ICitaRepository>(sp =>
 builder.Services.AddScoped<PacienteService>();
 builder.Services.AddScoped<MedicoService>();
 builder.Services.AddScoped<CitaService>();
+
+// Observers de Cita (antes se creaban con "new" dentro de CitasController —
+// Tight Coupling). Ahora se registran aquí y CitaService los recibe
+// inyectados como IEnumerable<ICitaObserver>.
+builder.Services.AddScoped<ICitaObserver, EmailObserver>();
+builder.Services.AddScoped<ICitaObserver, SmsObserver>();
 
 var app = builder.Build();
 

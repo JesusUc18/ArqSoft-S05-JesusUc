@@ -1,6 +1,5 @@
 ﻿using CitasApp.Application.Services;
 using CitasApp.Domain.Models;
-using CitasApp.Infrastructure.Observers;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CitasApp.Api.Controllers
@@ -33,8 +32,13 @@ namespace CitasApp.Api.Controllers
         [HttpPost("confirmar/{citaId}")]
         public IActionResult Confirmar(int citaId)
         {
-            _citaService.AgregarObserver(new SmsObserver());
-            _citaService.AgregarObserver(new EmailObserver());
+            // Antes: aquí se hacía
+            //   _citaService.AgregarObserver(new SmsObserver());
+            //   _citaService.AgregarObserver(new EmailObserver());
+            // El controller decidía y creaba con "new" las clases concretas de
+            // notificación (Tight Coupling) cada vez que se confirmaba una cita.
+            // Ahora CitaService ya recibe sus observers por DI (ver Program.cs),
+            // así que el controller solo orquesta la acción de negocio.
             _citaService.Confirmar(citaId);
             var cita = _citaService.ObtenerPorId(citaId);
             return cita == null ? NotFound() : Ok(new { mensaje = $"Cita confirmada", cita });

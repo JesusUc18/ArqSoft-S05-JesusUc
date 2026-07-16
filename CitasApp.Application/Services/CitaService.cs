@@ -6,11 +6,19 @@ namespace CitasApp.Application.Services
     public class CitaService
     {
         private readonly ICitaRepository _repository;
-        private readonly List<ICitaObserver> _observers = new();
+        private readonly IEnumerable<ICitaObserver> _observers;
 
-        public CitaService(ICitaRepository repository) => _repository = repository;
-
-        public void AgregarObserver(ICitaObserver observer) => _observers.Add(observer);
+        // Antes: CitaService no recibía observers, y quien llamaba a Confirmar()
+        // (CitasController, en la capa Api) decidía con "new SmsObserver()" /
+        // "new EmailObserver()" quién se notificaba (Tight Coupling).
+        // Ahora: los observers se inyectan por constructor. CitaService ya no
+        // depende de clases concretas de Infrastructure, solo de la interfaz
+        // ICitaObserver. Quién se registra se decide en Program.cs (DI).
+        public CitaService(ICitaRepository repository, IEnumerable<ICitaObserver> observers)
+        {
+            _repository = repository;
+            _observers = observers;
+        }
 
         public void Confirmar(int id)
         {
