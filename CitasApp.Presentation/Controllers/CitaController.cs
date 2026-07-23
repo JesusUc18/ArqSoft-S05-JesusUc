@@ -25,6 +25,8 @@ namespace CitasApp.Presentation.Controllers
         public IActionResult Index()
         {
             var citas = _citaRepository.ObtenerTodas();
+            ViewBag.Medicos = _medicoRepository.ObtenerTodos();
+            ViewBag.Pacientes = _pacienteRepository.ObtenerTodos();
             return View(citas);
         }
 
