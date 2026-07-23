@@ -4,4 +4,5 @@
   <Project Path="CitasApp.Domain/CitasApp.Domain.csproj" />
   <Project Path="CitasApp.Infrastructure/CitasApp.Infrastructure.csproj" />
   <Project Path="CitasApp.Presentation/CitasApp.Presentation.csproj" />
+  <Project Path="CitasApp.xUnit/CitasApp.xUnit.csproj" Id="a01ef4e3-1d86-45c8-878e-dcca83528966" />
 </Solution>
