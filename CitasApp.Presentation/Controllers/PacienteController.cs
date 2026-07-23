@@ -4,7 +4,7 @@ using CitasApp.Domain.Interfaces;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Citas_App.Controllers
+namespace CitasApp.Presentation.Controllers
 {
     public class PacienteController : Controller
     {
