@@ -16,6 +16,7 @@
 Este proyecto es una **aplicación web desarrollada en .NET** que permite administrar información relacionada con pacientes, médicos y citas médicas.
 
 El sistema facilita el registro y visualización de pacientes, médicos y citas, organizando la información mediante los principios de la **Arquitectura Hexagonal (Clean Architecture)**. Esto permite desacoplar la lógica de negocio central de los detalles de infraestructura y de la interfaz de usuario, manteniendo una estructura altamente ordenada, escalable y fácil de mantener.
+(test)
 
 ---
 
